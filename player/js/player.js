@@ -4,11 +4,19 @@ sock.emit('player');
 
 sock.on('msg', onMessage);
 sock.on('clear', clear);
+sock.on('gamemsg', gameMessage);
 
 sock.on('name', function (name) {
     var displayname = document.getElementById('name-display');
     displayname.innerHTML = name;
 });
+
+function gameMessage(text) {
+  var list = document.getElementById('gv');
+  var content = document.createElement('li');
+  content.innerHTML = text;
+  list.appendChild(content);
+}
 
 function onMessage(text) {
     var list = document.getElementById('chat');
@@ -32,8 +40,13 @@ function clear() {
   document.getElementsByClassName('gameview').remove();
   var content = document.createElement('div');
   content.className = "gameview";
+  content.id = "gv";
   var append = document.getElementById('wrap');
   append.appendChild(content);
+}
+
+function fakerMode(){
+  document.getElementsByClassName('gameview').innerHTML = "Du är faker";
 }
 
 var form = document.getElementById('name-form');
@@ -46,4 +59,5 @@ document.getElementById('room-input').value = '';
 sock.emit('input', inputName, inputRoom);
 
 e.preventDefault();
+
 });
