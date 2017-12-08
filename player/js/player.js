@@ -4,11 +4,19 @@ socket.emit('player');
 
 socket.on('msg', onMessage);
 socket.on('clear', clear);
+socket.on('gamemsg', gameMessage);
 
 socket.on('name', function (name) {
     var displayname = document.getElementById('name-display');
     displayname.innerHTML = name;
 });
+
+function gameMessage(text) {
+  var list = document.getElementById('gameview');
+  var content = document.createElement('li');
+  content.innerHTML = text;
+  list.appendChild(content);
+}
 
 socket.on('pickCategory', function() {
   var choice1 = document.createElement('button');
@@ -51,6 +59,7 @@ function clear() {
   document.getElementsByClassName('gameview').remove();
   var content = document.createElement('div');
   content.className = "gameview";
+  content.id = "gameview";
   var append = document.getElementById('wrap');
   append.appendChild(content);
 }
@@ -65,4 +74,5 @@ document.getElementById('room-input').value = '';
 socket.emit('input', inputName, inputRoom);
 
 e.preventDefault();
+
 });

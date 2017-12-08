@@ -85,8 +85,19 @@ function onConnect(socket) {
         // Game loop
 
         localPlayers.forEach((player, index) => {
-          player.sock.emit('msg', 'Game is starting, you are player ' + index);
           player.sock.emit('clear');
+          player.sock.emit('gamemsg', 'Game is starting, you are player ' + index);
+        });
+        var faker = chooseFaker(localPlayers);
+        console.log(faker);
+        localPlayers.forEach((player, index) => {
+          console.log(index);
+          if (index == faker) {
+            player.sock.emit('gamemsg', 'Youre the faker, try to blend in');
+          }
+          else {
+            player.sock.emit('gamemsg', 'Blablabla');
+          }
         });
 
       //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
@@ -105,6 +116,10 @@ function onConnect(socket) {
           }
           });
  }
+
+function chooseFaker(localPlayers){
+  return (Math.floor(Math.random() * allPlayers.length));
+}
 
 function pickCategory(host, players, index) {
 
