@@ -1,5 +1,5 @@
-var audio = new Audio('bonetrousle.mp3');
-audio.play();
+//var audio = new Audio('bonetrousle.mp3');
+//audio.play();
 
 var socket = io();
 
@@ -17,7 +17,11 @@ socket.on('gameready', displayStartButton)
 socket.on('msg', onMessage);
 
 function displayStartButton() {
+    btn = document.getElementById('startButton');
     document.getElementById('startButton').style.visibility = "visible";
+    btn.addEventListener('click', function(e) {
+    socket.emit('startgame');
+    });
 }
 
 function onMessage(text) {

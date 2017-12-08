@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Partygame</title>
+    </head>
+    <body>
+
+        <div class="wrapper">
+            <div class="main">
+                <ul id="chat"></ul>
+            </div>
+            <div class="game-controls">
+            </div>
+            <div class="name-div">
+                <form id="name-form">
+                    <input id="name-input"/>
+                    <input id="room-input"/>
+                    <button>Send</button>
+                </form>
+            </div>
+            <div id="name-display">
+            </div>
+        </div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="js/player.js"></script>
+    </body>
+</html>

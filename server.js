@@ -9,10 +9,10 @@ let server = http.createServer(app);
 let io = socketio(server);
 let path = require('path');
 let ip = require('ip');
-let Partygame = require('./');
+let Partygame = require('./Partygame');
 
 var allClients = [];
-var Players = [];
+var allPlayers = [];
 
 io.on('connection', onConnect);
 
@@ -22,12 +22,12 @@ function onConnect(socket) {
 
     allClients.push(socket);
 
-    socket.on('client', clientLoop);
+    socket.on('player', clientLoop);
     function clientLoop() {
 
     socket.emit('msg', 'Hello! Welcome new player. Please choose a name.');
 
-    socket.on('msg', function (inputName, inputRoom) {
+    socket.on('input', function (inputName, inputRoom) {
         roomIndex = rooms.indexOf(inputRoom);
         room = rooms[roomIndex];
 
@@ -36,27 +36,21 @@ function onConnect(socket) {
             return;
         }
 
-        //Check if connected client is a player
-        for (var i = 0; i < Players.length; i++) {
-                if (Players[i].name == inputName) {
+        //Check if connected player is a player
+        for (var i = 0; i < allPlayers.length; i++) {
+                if (allPlayers[i].name == inputName) {
                 io.emit('msg', inputName + ' has reconnected!');
-                // Rewrite reconnected players socket
+                // Rewrite reconnected allPlayers socket
                 }
             }
-
-        if (Players[2]) {
-            socket.emit('msg', 'Sorry, game is full.');
-            return;
+       // Get amount of players in current room.
+        var roomArray = io.sockets.adapter.rooms[inputRoom];
+        if (roomArray.length > 3) {
+          socket.emit('msg', 'Sorry, game is full.');
+          return;
         }
-        if (Players[1]) {
-        Players[2] = {sock:socket, name:inputName};
-        }
-        // P2 overwrites P1
-        if (Players[0]) {
-        Players[1] = {sock:socket, name:inputName};
-        io.emit('gameready');
-        }
-        else Players[0] = {sock:socket, name:inputName};
+        else allPlayers.push({sock:socket, name:inputName});
+        if (roomArray.length > 1) io.emit('gameready');
 
         socket.join(room);
         io.to(room).emit('msg', inputName + ' just joined!');
@@ -75,18 +69,34 @@ function onConnect(socket) {
         console.log('Creating room with code: ' + roomcode);
         var room = io.of(roomcode);
         socket.join(roomcode);
+
+        socket.on('startgame', function() {
+          var localPlayers = [];
+          //If a player is in host's room, push it into localPlayers
+          //var localPlayers = io.sockets.adapter.rooms[roomcode];
+          allPlayers.forEach((player) => {
+              if(io.sockets.adapter.sids[player.sock.id][roomcode]) {
+                  localPlayers.push(player);
+              };
+          });
+        // Game loop
+        new Partygame(localPlayers, roomcode);
+            });
     };
 
     socket.on('disconnect', function() {
           console.log('Got disconnect!');
           var i = allClients.indexOf(socket);
           allClients.splice(i, 1);
-          var x = Players.findIndex(p => p.sock === socket);
+          var x = allPlayers.findIndex(p => p.sock === socket);
           if (x != -1) { //If the client is a player
-          io.emit('msg', Players[x].name + ' just left!');
+          io.emit('msg', allPlayers[x].name + ' just left!');
           }
           });
-}
+
+ }
+
+
 
 function matchReady(sockA, sockB) {
     [sockA, sockB].forEach((socket) => socket.emit('msg', 'Game can be started!'));
@@ -110,15 +120,15 @@ app.get('/host', function(req, res) {
   res.sendFile(path.join(__dirname, 'host/host.html'));
 });
 // Serve client.html as subpage
-app.get('/client', function(req, res) {
-  res.sendFile(path.join(__dirname, 'client/client.html'));
+app.get('/player', function(req, res) {
+  res.sendFile(path.join(__dirname, 'player/player.html'));
 });
 
-//Give access to files from /client and /host through Express
-app.use(express.static(__dirname + '/client'));
+//Give access to files from /player and /host through Express
+app.use(express.static(__dirname + '/player'));
 app.use(express.static(__dirname + '/host'));
+app.use(express.static(__dirname + '/'));
+
 
 //Listen on port 1337
 server.listen(1337, () => console.log('Server online on port 1337 with localip: ' + ip.address()) );
-
-
