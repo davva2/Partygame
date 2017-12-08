@@ -12,15 +12,14 @@ function gameLobby(ip, roomcode) {
     onMessage('Waiting for players');
 };
 
-io.on('pickCategory', function() {
+socket.on('gameready', displayStartButton);
+
+socket.on('msg', onMessage);
+
+socket.on('pickCategory', function() {
 var disp = document.getElementById("time");
 startTimer(20, disp, 'categoryTimeout');
 });
-
-
-socket.on('gameready', displayStartButton)
-
-socket.on('msg', onMessage);
 
 function displayStartButton() {
     btn = document.getElementById('startButton');
@@ -45,8 +44,8 @@ function startTimer(timer, display, type) {
             timer = timer-1;
         }
         else{
-            io.emit(type, 'point');
+            socket.emit(type, 'point');
+            return;
         }
     }, 1000);
-}
-/////
+  }

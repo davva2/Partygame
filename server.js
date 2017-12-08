@@ -80,10 +80,18 @@ function onConnect(socket) {
               };
           });
         // Game loop
-        new Partygame(localPlayers, roomcode);
-            });
-    };
 
+        localPlayers.forEach((player, index) => {
+          player.sock.emit('msg', 'Game is starting, you are player ' + index);
+        });
+        socket.emit('pickCategory');
+        socket.on('categoryTimeout', function(category) {
+          if (category == 'point') {
+        		socket.emit('msg', 'Someone chose point :)))');
+          }
+        });
+      });
+    }
     socket.on('disconnect', function() {
           console.log('Got disconnect!');
           var i = allClients.indexOf(socket);
