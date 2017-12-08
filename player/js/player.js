@@ -1,12 +1,12 @@
 var sock = io();
 
-sock.emit('player');
+socket.emit('player');
 
-sock.on('msg', onMessage);
-sock.on('clear', clear);
-sock.on('gamemsg', gameMessage);
+socket.on('msg', onMessage);
+socket.on('clear', clear);
+socket.on('gamemsg', gameMessage);
 
-sock.on('name', function (name) {
+socket.on('name', function (name) {
     var displayname = document.getElementById('name-display');
     displayname.innerHTML = name;
 });
@@ -52,7 +52,7 @@ var inputRoom = document.getElementById('room-input').value;
 document.getElementById('name-input').value = '';
 document.getElementById('room-input').value = '';
 
-sock.emit('input', inputName, inputRoom);
+socket.emit('input', inputName, inputRoom);
 
 e.preventDefault();
 
