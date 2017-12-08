@@ -40,14 +40,14 @@ function onMessage(text) {
 
 /////
 function startTimer(timer, display, type) {
-    setInterval(function () {
+    var k = setInterval(function () {
         display.textContent = timer;
         if (timer > 0) {
             timer = timer-1;
         }
         else{
             socket.emit(type, 'point');
-            return;
+            clearInterval(k);
         }
     }, 1000);
   }

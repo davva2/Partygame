@@ -84,6 +84,7 @@ function onConnect(socket) {
 
         localPlayers.forEach((player, index) => {
           player.sock.emit('msg', 'Game is starting, you are player ' + index);
+          player.sock.emit('clear');
         });
         socket.emit('pickCategory');
         socket.on('categoryTimeout', function(category) {
@@ -104,8 +105,6 @@ function onConnect(socket) {
           });
 
  }
-
-
 
 function matchReady(sockA, sockB) {
     [sockA, sockB].forEach((socket) => socket.emit('msg', 'Game can be started!'));
