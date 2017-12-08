@@ -31,7 +31,7 @@ socket.on('pickCategory', function() {
   choice2.innerHTML = 'Hands up';
   choice1.style.padding = "24px 64px";
   choice2.style.padding = "24px 64px";
-  var div = document.getElementById('game');
+  var div = document.getElementById('gameview');
   div.appendChild(choice1);
   div.appendChild(choice2);
 })
