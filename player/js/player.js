@@ -27,10 +27,13 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
         }
     }
 }
-
-
+//Removes everything inside of the gameview div
 function clear() {
   document.getElementsByClassName('gameview').remove();
+  var content = document.createElement('div');
+  content.className = "gameview";
+  var append = document.getElementById('wrap');
+  append.appendChild(content);
 }
 
 var form = document.getElementById('name-form');
