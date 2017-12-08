@@ -12,9 +12,14 @@ function gameLobby(ip, roomcode) {
     onMessage('Waiting for players');
 };
 
-socket.on('gameready', displayStartButton)
+socket.on('gameready', displayStartButton);
 
 socket.on('msg', onMessage);
+
+socket.on('pickCategory', function() {
+var disp = document.getElementById("time");
+startTimer(20, disp, 'categoryTimeout');
+});
 
 function displayStartButton() {
     btn = document.getElementById('startButton');
@@ -30,3 +35,17 @@ function onMessage(text) {
     content.innerHTML = text;
     list.appendChild(content);
 };
+
+/////
+function startTimer(timer, display, type) {
+    setInterval(function () {
+        display.textContent = timer;
+        if (timer > 0) {
+            timer = timer-1;
+        }
+        else{
+            socket.emit(type, 'point');
+            return;
+        }
+    }, 1000);
+  }
