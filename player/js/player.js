@@ -12,7 +12,7 @@ sock.on('name', function (name) {
 });
 
 function gameMessage(text) {
-  var list = document.getElementById('gv');
+  var list = document.getElementById('gameview');
   var content = document.createElement('li');
   content.innerHTML = text;
   list.appendChild(content);
@@ -40,13 +40,9 @@ function clear() {
   document.getElementsByClassName('gameview').remove();
   var content = document.createElement('div');
   content.className = "gameview";
-  content.id = "gv";
+  content.id = "gameview";
   var append = document.getElementById('wrap');
   append.appendChild(content);
-}
-
-function fakerMode(){
-  document.getElementsByClassName('gameview').innerHTML = "Du är faker";
 }
 
 var form = document.getElementById('name-form');
