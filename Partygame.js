@@ -14,7 +14,15 @@ class Partygame {
       this._players.forEach((player, index) => {
         player.sock.emit('msg', 'Game is starting, you are player ' + index);
       });
+      io.emit('pickCategory');
+      io.on('categoryTimeout', categoryChoosen);
     }
+}
+
+function categoryChoosen(category){
+	if (category == 'point') {
+		io.emit('msg', 'Someone chose point :)))');
+	}
 }
 
 module.exports = Partygame;
