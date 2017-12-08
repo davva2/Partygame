@@ -83,8 +83,19 @@ function onConnect(socket) {
         // Game loop
 
         localPlayers.forEach((player, index) => {
-          player.sock.emit('msg', 'Game is starting, you are player ' + index);
           player.sock.emit('clear');
+          player.sock.emit('gamemsg', 'Game is starting, you are player ' + index);
+        });
+        var faker = chooseFaker(localPlayers);
+        console.log(faker);
+        localPlayers.forEach((player, index) => {
+          console.log(index);
+          if (index == faker) {
+            player.sock.emit('gamemsg', 'Youre the faker, try to blend in');
+          }
+          else {
+            player.sock.emit('gamemsg', 'Blablabla');
+          }
         });
         socket.emit('pickCategory');
         socket.on('categoryTimeout', function(category) {
@@ -105,6 +116,10 @@ function onConnect(socket) {
           });
 
  }
+
+function chooseFaker(localPlayers){
+  return (Math.floor(Math.random() * allPlayers.length));
+}
 
 function matchReady(sockA, sockB) {
     [sockA, sockB].forEach((socket) => socket.emit('msg', 'Game can be started!'));
