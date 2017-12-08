@@ -1,4 +1,4 @@
-var sock = io();
+var socket = io();
 
 socket.emit('player');
 
@@ -18,6 +18,24 @@ function gameMessage(text) {
   list.appendChild(content);
 }
 
+socket.on('pickCategory', function() {
+  var choice1 = document.createElement('button');
+  var choice2 = document.createElement('button');
+  choice1.addEventListener('click', function(e) {
+  socket.emit('categoryTimeout', 'point');
+  });
+  choice2.addEventListener('click', function(e) {
+  socket.emit('categoryTimeout', 'hand');
+  });
+  choice1.innerHTML = 'You gotta point';
+  choice2.innerHTML = 'Hands up';
+  choice1.style.padding = "24px 64px";
+  choice2.style.padding = "24px 64px";
+  var div = document.getElementById('game');
+  div.appendChild(choice1);
+  div.appendChild(choice2);
+})
+
 function onMessage(text) {
     var list = document.getElementById('chat');
     var content = document.createElement('li');
@@ -35,6 +53,7 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
         }
     }
 }
+
 //Removes everything inside of the gameview div
 function clear() {
   document.getElementsByClassName('gameview').remove();

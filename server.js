@@ -14,6 +14,8 @@ let Partygame = require('./Partygame');
 var allClients = [];
 var allPlayers = [];
 
+var categoryIndex = 1;
+
 io.on('connection', onConnect);
 
 var rooms = [];
@@ -97,12 +99,11 @@ function onConnect(socket) {
             player.sock.emit('gamemsg', 'Blablabla');
           }
         });
-        socket.emit('pickCategory');
-        socket.on('categoryTimeout', function(category) {
-          if (category == 'point') {
-        		socket.emit('msg', 'Someone chose point :)))');
-          }
-        });
+
+      //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
+
+        pickCategory(socket, localPlayers, categoryIndex);
+
       });
     }
     socket.on('disconnect', function() {
@@ -114,17 +115,35 @@ function onConnect(socket) {
           io.emit('msg', allPlayers[x].name + ' just left!');
           }
           });
-
  }
 
 function chooseFaker(localPlayers){
   return (Math.floor(Math.random() * allPlayers.length));
 }
 
-function matchReady(sockA, sockB) {
-    [sockA, sockB].forEach((socket) => socket.emit('msg', 'Game can be started!'));
-}
+function pickCategory(host, players, index) {
 
+  host.on('categoryTimeout', function(category) {
+    if (chosen == 0) host.emit('msg', 'Category is hand');
+    io.removeAllListeners('categoryTimeout');
+ });
+
+  players[index].sock.emit('pickCategory');
+  host.emit('pickCategory');
+  categoryIndex++;
+  var chosen = 0;
+  players[index].sock.on('categoryTimeout', function(category) {
+    if (category == 'point') {
+      host.emit('msg', 'Category is point');
+    }
+    else if (category == 'hand') {
+      host.emit('msg', 'Category is hand');
+    }
+    chosen = 1;
+  });
+
+
+}
 function generateRoomCode() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
