@@ -102,7 +102,7 @@ function onConnect(socket) {
 
       //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
 
-        pickCategory(socket, localPlayers, categoryIndex);
+      var category = pickCategory(socket, localPlayers, categoryIndex);
 
       });
     }
@@ -135,9 +135,11 @@ function pickCategory(host, players, index) {
   players[index].sock.on('categoryTimeout', function(category) {
     if (category == 'point') {
       host.emit('msg', 'Category is point');
+      return 'point';
     }
     else if (category == 'hand') {
       host.emit('msg', 'Category is hand');
+      return 'hand';
     }
     chosen = 1;
   });
