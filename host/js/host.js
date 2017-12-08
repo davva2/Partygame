@@ -26,6 +26,8 @@ function displayStartButton() {
     document.getElementById('startButton').style.visibility = "visible";
     btn.addEventListener('click', function(e) {
     socket.emit('startgame');
+    document.getElementById('startButton').style.visibility = "hidden";
+
     });
 }
 

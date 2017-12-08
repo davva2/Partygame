@@ -14,6 +14,7 @@ class Partygame {
     _init() {
       this._players.forEach((player, index) => {
         player.sock.emit('msg', 'Game is starting, you are player ' + index);
+        player.sock.emit('clear');
       });
       this._host.emit('pickCategory');
       this._host.on('categoryTimeout', categoryChoosen);

@@ -62,7 +62,8 @@ function onConnect(socket) {
 
     function hostLoop() {
 
-        var roomcode = generateRoomCode();
+        //var roomcode = generateRoomCode();
+        var roomcode = "A";
         rooms.push(roomcode);
         var localip = ip.address();
         socket.emit('room', localip, roomcode);
