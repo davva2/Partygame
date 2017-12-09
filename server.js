@@ -58,7 +58,7 @@ function onConnect(socket) {
         io.to(room).emit('msg', inputName + ' just joined!');
         socket.emit('name', inputName);
         });
-    };
+    }
 
     socket.on('host', hostLoop);
 
@@ -80,7 +80,7 @@ function onConnect(socket) {
           allPlayers.forEach((player) => {
               if(io.sockets.adapter.sids[player.sock.id][roomcode]) {
                   localPlayers.push(player);
-              };
+              }
           });
         // Game loop
 

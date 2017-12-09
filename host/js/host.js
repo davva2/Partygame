@@ -7,10 +7,10 @@ socket.emit('host');
 socket.on('room', gameLobby);
 
 function gameLobby(ip, roomcode) {
-    document.getElementById('display').innerHTML = ('Join the game at: ' + ip + ':1337 with the code ' + roomcode)
+    document.getElementById('display').innerHTML = ('Join the game at: ' + ip + ':1337 with the code ' + roomcode);
 
     onMessage('Waiting for players');
-};
+}
 
 socket.on('gameready', displayStartButton);
 
@@ -36,7 +36,7 @@ function onMessage(text) {
     var content = document.createElement('li');
     content.innerHTML = text;
     list.appendChild(content);
-};
+}
 
 /////
 function startTimer(timer, display, type) {
