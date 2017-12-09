@@ -90,11 +90,15 @@ function onConnect(socket) {
       });
       // Main game loop.
       var faker = chooseFaker(localPlayers);
-      var category = pickCategory(socket, localPlayers, categoryIndex);
-      var question = getQuestion(question);
-      sendQuestion(player, faker, category, question);
-      //wait
-      //vote
+      //var category = pickCategory(socket, localPlayers, categoryIndex);
+      var category = 'point';
+      var question = getQuestion(category);
+      console.log(question);
+      console.log(category);
+      sendQuestion(localPlayers, faker, category, question);
+      //Count down on host
+      //Clear host and players
+      //Vote and show count on host
       //clear and repeat
 
       //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
@@ -114,13 +118,19 @@ function onConnect(socket) {
   });
 }
 
+
 //Get question from file depending on category
 function getQuestion(category){
-
+  if(category == 'point'){
+    return 'Peka på Anton';
+  }
+  if(category == 'hand'){
+    return 'Räck upp din hand om du heter Anton.';
+  }
 }
 
 //Send question to all players except for the faker
-function sendQuestion(player, faker, category, question){
+function sendQuestion(localPlayers, faker, category, question){
   localPlayers.forEach((player, index) => {
     if (index == faker) {
       player.sock.emit('gamemsg', 'Youre the faker, try to blend in. The category is ' + category);
