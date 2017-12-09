@@ -39,6 +39,7 @@ socket.on('pickCategory', function() {
 function onMessage(text) {
   var list = document.getElementById('chat');
   var content = document.createElement('li');
+  content.innerHTML = text;
   list.appendChild(content);
 }
 

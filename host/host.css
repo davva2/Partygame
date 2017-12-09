@@ -1,0 +1,14 @@
+body {
+
+}
+
+.wrapper {
+  margin: auto;
+  width: 30%;
+}
+
+#chat {
+  width: 20vw;
+  height: auto;
+  font-size: 1.5vw;
+}

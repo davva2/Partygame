@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+      <link rel="stylesheet" type="text/css" href="host.css">
         <meta charset="utf-8">
         <title>Partygame</title>
     </head>
@@ -12,9 +13,9 @@
                 </div>
                 <ul id="chat"></ul>
             </div>
+            <div>Registration closes in <span id="time"></span> seconds!</div>
+            <button id="startButton" style="visibility:hidden">Everybody's ready!</button>
         </div>
-        <div>Registration closes in <span id="time"></span> seconds!</div>
-        <button id="startButton" style="visibility:hidden">Everybody's ready!</button>
         <script src="/socket.io/socket.io.js"></script>
         <script src="js/host.js"></script>
 

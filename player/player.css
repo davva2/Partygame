@@ -1,0 +1,28 @@
+body {
+
+}
+
+.gameview {
+  margin: auto;
+  width: 30%;
+}
+
+#chat {
+  width: 20vw;
+  height: auto;
+  font-size: 1.5vw;
+}
+
+.inputs {
+  height: 5vh;
+  width: auto;
+}
+
+#name-display {
+  position:absolute;
+    bottom:0px;
+    right:25%;
+    left:50%;
+    margin-left:-75px;
+    font-size: 32px;
+}
