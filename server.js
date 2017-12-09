@@ -88,24 +88,21 @@ function onConnect(socket) {
         player.sock.emit('clear');
         player.sock.emit('gamemsg', 'Game is starting, you are player ' + index);
       });
+      // Main game loop.
       var faker = chooseFaker(localPlayers);
-      console.log(faker);
-      localPlayers.forEach((player, index) => {
-        console.log(index);
-        if (index == faker) {
-          player.sock.emit('gamemsg', 'Youre the faker, try to blend in');
-        }
-        else {
-          player.sock.emit('gamemsg', 'Blablabla');
-        }
-      });
+      var category = pickCategory(socket, localPlayers, categoryIndex);
+      var question = getQuestion(question);
+      sendQuestion(player, faker, category, question);
+      //wait
+      //vote
+      //clear and repeat
 
       //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
 
-      var category = pickCategory(socket, localPlayers, categoryIndex);
 
     });
   }
+
   socket.on('disconnect', function() {
     console.log('Got disconnect!');
     var i = allClients.indexOf(socket);
@@ -117,10 +114,29 @@ function onConnect(socket) {
   });
 }
 
+//Get question from file depending on category
+function getQuestion(category){
+
+}
+
+//Send question to all players except for the faker
+function sendQuestion(player, faker, category, question){
+  localPlayers.forEach((player, index) => {
+    if (index == faker) {
+      player.sock.emit('gamemsg', 'Youre the faker, try to blend in. The category is ' + category);
+    }
+    else {
+      player.sock.emit('gamemsg', question);
+    }
+  });
+}
+
+//Chooses the faker randomly from all the players
 function chooseFaker(localPlayers){
   return (Math.floor(Math.random() * allPlayers.length));
 }
 
+//One person picks the category for the round
 function pickCategory(host, players, index) {
 
   host.on('categoryTimeout', function(category) {
