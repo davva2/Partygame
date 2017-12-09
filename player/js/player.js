@@ -7,8 +7,8 @@ socket.on('clear', clear);
 socket.on('gamemsg', gameMessage);
 
 socket.on('name', function (name) {
-    var displayname = document.getElementById('name-display');
-    displayname.innerHTML = name;
+  var displayname = document.getElementById('name-display');
+  displayname.innerHTML = name;
 });
 
 function gameMessage(text) {
@@ -22,10 +22,10 @@ socket.on('pickCategory', function() {
   var choice1 = document.createElement('button');
   var choice2 = document.createElement('button');
   choice1.addEventListener('click', function(e) {
-  socket.emit('categoryTimeout', 'point');
+    socket.emit('categoryTimeout', 'point');
   });
   choice2.addEventListener('click', function(e) {
-  socket.emit('categoryTimeout', 'hand');
+    socket.emit('categoryTimeout', 'hand');
   });
   choice1.innerHTML = 'You gotta point';
   choice2.innerHTML = 'Hands up';
@@ -37,20 +37,20 @@ socket.on('pickCategory', function() {
 });
 
 function onMessage(text) {
-    var list = document.getElementById('chat');    
-    var content = document.createElement('li');
-    list.appendChild(content);
+  var list = document.getElementById('chat');
+  var content = document.createElement('li');
+  list.appendChild(content);
 }
 
 Element.prototype.remove = function() {
-    this.parentElement.removeChild(this);
+  this.parentElement.removeChild(this);
 };
 NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
-    for(var i = this.length - 1; i >= 0; i--) {
-        if(this[i] && this[i].parentElement) {
-            this[i].parentElement.removeChild(this[i]);
-        }
+  for(var i = this.length - 1; i >= 0; i--) {
+    if(this[i] && this[i].parentElement) {
+      this[i].parentElement.removeChild(this[i]);
     }
+  }
 };
 
 //Removes everything inside of the gameview div
@@ -65,13 +65,13 @@ function clear() {
 
 var form = document.getElementById('name-form');
 form.addEventListener('submit', function(e) {
-var inputName = document.getElementById('name-input').value;
-var inputRoom = document.getElementById('room-input').value;
-document.getElementById('name-input').value = '';
-document.getElementById('room-input').value = '';
+  var inputName = document.getElementById('name-input').value;
+  var inputRoom = document.getElementById('room-input').value;
+  document.getElementById('name-input').value = '';
+  document.getElementById('room-input').value = '';
 
-socket.emit('input', inputName, inputRoom);
+  socket.emit('input', inputName, inputRoom);
 
-e.preventDefault();
+  e.preventDefault();
 
 });

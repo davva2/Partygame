@@ -7,9 +7,9 @@ socket.emit('host');
 socket.on('room', gameLobby);
 
 function gameLobby(ip, roomcode) {
-    document.getElementById('display').innerHTML = ('Join the game at: ' + ip + ':1337 with the code ' + roomcode);
+  document.getElementById('display').innerHTML = ('Join the game at: ' + ip + ':1337 with the code ' + roomcode);
 
-    onMessage('Waiting for players');
+  onMessage('Waiting for players');
 }
 
 socket.on('gameready', displayStartButton);
@@ -17,37 +17,37 @@ socket.on('gameready', displayStartButton);
 socket.on('msg', onMessage);
 
 socket.on('pickCategory', function() {
-var disp = document.getElementById("time");
-startTimer(20, disp, 'categoryTimeout');
+  var disp = document.getElementById("time");
+  startTimer(20, disp, 'categoryTimeout');
 });
 
 function displayStartButton() {
-    btn = document.getElementById('startButton');
-    document.getElementById('startButton').style.visibility = "visible";
-    btn.addEventListener('click', function(e) {
+  btn = document.getElementById('startButton');
+  document.getElementById('startButton').style.visibility = "visible";
+  btn.addEventListener('click', function(e) {
     socket.emit('startgame');
     document.getElementById('startButton').style.visibility = "hidden";
 
-    });
+  });
 }
 
 function onMessage(text) {
-    var list = document.getElementById('chat');
-    var content = document.createElement('li');
-    content.innerHTML = text;
-    list.appendChild(content);
+  var list = document.getElementById('chat');
+  var content = document.createElement('li');
+  content.innerHTML = text;
+  list.appendChild(content);
 }
 
 /////
 function startTimer(timer, display, type) {
-    var k = setInterval(function () {
-        display.textContent = timer;
-        if (timer > 0) {
-            timer = timer-1;
-        }
-        else{
-            socket.emit(type, 'point');
-            clearInterval(k);
-        }
-    }, 1000);
-  }
+  var k = setInterval(function () {
+    display.textContent = timer;
+    if (timer > 0) {
+      timer = timer-1;
+    }
+    else{
+      socket.emit(type, 'point');
+      clearInterval(k);
+    }
+  }, 1000);
+}
