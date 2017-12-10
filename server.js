@@ -89,12 +89,15 @@ function onConnect(socket) {
         player.sock.emit('gamemsg', 'Game is starting, you are player ' + index);
       });
       // Main game loop.
+      var category = pickCategory(socket, localPlayers, categoryIndex, roomcode);
+      startTimer(10, 'category', roomcode);
+
+      setTimeout(deadFunc, 10.5*1000);
+      console.log(category);
       var faker = chooseFaker(localPlayers);
-      //var category = pickCategory(socket, localPlayers, categoryIndex);
-      var category = 'point';
+
       var question = getQuestion(category);
       console.log(question);
-      console.log(category);
       sendQuestion(localPlayers, faker, category, question);
       //Count down on host
       //Clear host and players
@@ -102,8 +105,6 @@ function onConnect(socket) {
       //clear and repeat
 
       //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
-
-
     });
   }
 
@@ -147,31 +148,53 @@ function chooseFaker(localPlayers){
 }
 
 //One person picks the category for the round
-function pickCategory(host, players, index) {
-
+function pickCategory(host, players, index, roomcode) {
+/*
   host.on('categoryTimeout', function(category) {
     if (chosen == 0) host.emit('msg', 'Category is hand');
     io.removeAllListeners('categoryTimeout');
-  });
+  });*/
 
   players[index].sock.emit('pickCategory');
-  host.emit('pickCategory');
-  categoryIndex++;
   var chosen = 0;
-  players[index].sock.on('categoryTimeout', function(category) {
+  players[index].sock.on('category', function(category) {
     if (category == 'point') {
       host.emit('msg', 'Category is point');
+      chosen = 1;
       return 'point';
     }
     else if (category == 'hand') {
       host.emit('msg', 'Category is hand');
+      chosen = 1;
       return 'hand';
     }
-    chosen = 1;
+
   });
-
-
+  setTimeout(function checkTimeout() {
+    console.log(chosen);
+    if (chosen == 0) {
+      host.emit('msg', 'Category is point');
+      return 'point';
+    }
+  }, 10.5*1000);
 }
+
+
+
+function startTimer(timer, type, room) {
+    var k = setInterval(function () {
+      if (timer > 0) {
+        timer = timer-1;
+        io.to(room).emit('timer', timer);
+      }
+      else{
+        io.to(room).emit('timeout', type);
+        clearInterval(k);
+        return true;
+      }
+    }, 1000);
+}
+
 function generateRoomCode() {
   var text = "";
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -180,6 +203,7 @@ function generateRoomCode() {
   text += possible.charAt(Math.floor(Math.random() * possible.length));
   return text;
 }
+function deadFunc(){}
 
 // Serve index.html as root page
 app.get('/', function(req, res) {
