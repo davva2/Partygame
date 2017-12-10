@@ -1,0 +1,17 @@
+{
+  "questions": {
+    "point": {
+      {"q": "Point at the person with most cats." },
+      {"q": "point at the person who is best at lying."},
+      {"q": "Point at the person with best cooking skills."},
+    },
+    "hand": {
+      {"q": "Hands up if you ate pizza today" },
+      {"q": "Hands up if you like water."},
+      {"q": "Hands up if you play videogames every day."},
+    }
+  }
+}
+
+console.log(obj.questions[0].q[1]);
+var obj = JSON.parse('questions.json');
