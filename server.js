@@ -94,40 +94,57 @@ function onConnect(socket) {
       // Main game loop.
       var category = pickCategory(socket, localPlayers, categoryIndex, roomcode);
       startTimer(10, 'category', roomcode);
-      var category =
       server.on('categoryPicked', function(picked) {
-        var category = picked;
+        category = picked;
+        var faker = chooseFaker(localPlayers);
+        var question = getQuestion(category);
+        var variables = [category, faker, question];
+        localPlayers.forEach((player, index) => {
+          player.sock.emit('clear');
+          player.sock.emit('gamemsg', question);
+        });
+        startTimer(10, 'startVote', room, variables, 'gameEvent');
       });
-      console.log(category);
-      var faker = chooseFaker(localPlayers);
-      var question = getQuestion(category);
-      console.log(question);
-      sendQuestion(localPlayers, faker, category, question);
+      server.on('gameEvent', function(variables){
+        var faker = variables[1];
+        var question = variables[2];
+          localPlayers.forEach((player, index) => {
+            player.sock.emit('clear');
+            player.sock.emit('gamemsg', 'Vote for the player that you think is the faker.');
+          });
+        sendQuestion(localPlayers, faker, category, question);
+        startTimer(20, 'startVote', room, [faker,question], 'startVote');
+
+        server.on('startVote', function(variables){
+          vote(localPlayers);
+
+        });
+      });/*
+      });
       //Count down on host
       //Clear host and players
       //Vote and show count on host
 
-      vote(localPlayers);/*
       io.to(roomcode).on('votePlayer', function(votePlayer, fromPlayer){
-        if (votePlayer == faker) {
-          localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
-        }
-      });*/
-      //clear and repeat
-
-      //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
-    });
-  }
-
-  socket.on('disconnect', function() {
-    console.log('Got disconnect!');
-    var i = allClients.indexOf(socket);
-    allClients.splice(i, 1);
-    var x = allPlayers.findIndex(p => p.sock === socket);
-    if (x != -1) { //If the client is a player
-      io.emit('msg', allPlayers[x].name + ' just left!');
+      if (votePlayer == faker) {
+      localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
     }
-  });
+  });*/
+  //clear and repeat
+
+  //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
+});
+}
+
+socket.on('disconnect', function() {
+  console.log('Got disconnect!');
+  var i = allClients.indexOf(socket);
+  allClients.splice(i, 1);
+  var x = allPlayers.findIndex(p => p.sock === socket);
+  if (x != -1) { //If the client is a player
+    io.emit('msg', allPlayers[x].name + ' just left!');
+  }
+});
 }
 
 
@@ -160,58 +177,55 @@ function chooseFaker(localPlayers){
 
 //One person picks the category for the round
 function pickCategory(host, players, index, roomcode) {
-/*
+  /*
   host.on('categoryTimeout', function(category) {
-    if (chosen == 0) host.emit('msg', 'Category is hand');
-    io.removeAllListeners('categoryTimeout');
-  });*/
+  if (chosen == 0) host.emit('msg', 'Category is hand');
+  io.removeAllListeners('categoryTimeout');
+});*/
 
-  players[index].sock.emit('pickCategory');
-  var chosen = 0;
-  players[index].sock.on('category', function(category) {
-    if (category == 'point') {
-      host.emit('msg', 'Category is point');
-      chosen = 1;
-      server.emit('categoryPicked','point');
-    }
-    else if (category == 'hand') {
-      host.emit('msg', 'Category is hand');
-      chosen = 1;
-      server.emit('categoryPicked','hand');
-    }
+players[index].sock.emit('pickCategory');
+var chosen = 0;
+players[index].sock.on('category', function(category) {
+  if (category == 'point') {
+    host.emit('msg', 'Category is point');
+    chosen = 1;
+    server.emit('categoryPicked','point');
+  }
+  else if (category == 'hand') {
+    host.emit('msg', 'Category is hand');
+    chosen = 1;
+    server.emit('categoryPicked','hand');
+  }
 
-  });
-  setTimeout(function checkTimeout() {
-    console.log(chosen);
-    if (chosen == 0) {
-      host.emit('msg', 'Category is point');
-      server.emit('categoryPicked', 'point');
-    }
-  }, 10.5*1000);
+});
+setTimeout(function checkTimeout() {
+  console.log(chosen);
+  if (chosen == 0) {
+    host.emit('msg', 'Category is point');
+    server.emit('categoryPicked', 'point');
+  }
+}, 10.5*1000);
 }
 
-
-
-function startTimer(timer, type, room) {
-    var k = setInterval(function () {
-      if (timer > 0) {
-        timer = timer-1;
-        io.to(room).emit('timer', timer);
-      }
-      else{
-        io.to(room).emit('timeout', type);
-        clearInterval(k);
-        return true;
-      }
-    }, 1000);
+function startTimer(timer, type, room, variables, nextStop) {
+  var k = setInterval(function () {
+    if (timer > 0) {
+      timer = timer-1;
+      io.to(room).emit('timer', timer);
+    }
+    else{
+      io.to(room).emit('timeout', type);
+      clearInterval(k);
+    }
+  }, 1000);
+  server.emit(nextStop, variables);
 }
-
 
 function vote(localPlayers) {
   names = [];
   localPlayers.forEach((player, index) => {
     names.push(player.name);
-    });
+  });
 
   localPlayers.forEach((player, index) => {
     player.sock.emit('vote', names, index);
