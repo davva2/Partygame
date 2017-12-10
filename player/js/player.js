@@ -5,7 +5,8 @@ socket.emit('player');
 socket.on('msg', onMessage);
 socket.on('clear', clear);
 socket.on('gamemsg', gameMessage);
-
+socket.on('timer', timerFunc)
+socket.on('timeout', timeoutFunc);
 socket.on('name', function (name) {
   var displayname = document.getElementById('name-display');
   displayname.innerHTML = name;
@@ -22,10 +23,10 @@ socket.on('pickCategory', function() {
   var choice1 = document.createElement('button');
   var choice2 = document.createElement('button');
   choice1.addEventListener('click', function(e) {
-    socket.emit('categoryTimeout', 'point');
+    socket.emit('category', 'point');
   });
   choice2.addEventListener('click', function(e) {
-    socket.emit('categoryTimeout', 'hand');
+    socket.emit('category', 'hand');
   });
   choice1.innerHTML = 'You gotta point';
   choice2.innerHTML = 'Hands up';
@@ -129,15 +130,30 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
     }
   }
 };
+// Timer function for
+function timerFunc(timer) {
+  var display = document.getElementById('timediv');
+
+  display.textContent = timer;
+}
+
+function timeoutFunc(type) {
+  var display = document.getElementById('timediv');
+  display.textContent = '';
+}
 
 //Removes everything inside of the gameview div
 function clear() {
   document.getElementsByClassName('gameview').remove();
   var content = document.createElement('div');
+  var timediv = document.createElement('div');
+  timediv.id = "timediv";
   content.className = "gameview";
   content.id = "gameview";
   var append = document.getElementById('wrap');
   append.appendChild(content);
+  append.appendChild(timediv);
+
 }
 
 var form = document.getElementById('name-form');
