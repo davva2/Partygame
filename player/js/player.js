@@ -5,7 +5,7 @@ socket.emit('player');
 socket.on('msg', onMessage);
 socket.on('clear', clear);
 socket.on('gamemsg', gameMessage);
-socket.on('timer', timerFunc)
+socket.on('timer', timerFunc);
 socket.on('timeout', timeoutFunc);
 socket.on('name', function (name) {
   var displayname = document.getElementById('name-display');
@@ -37,9 +37,26 @@ socket.on('pickCategory', function() {
   div.appendChild(choice2);
 });
 
-socket.on('vote', function(localPlayers, index, room) {
+socket.on('vote', function (names, playerIndex) {
+
+  names.forEach((player, index) => {
+    var div = document.getElementById('gameview');
+    if (playerIndex != index) {
+      var btn = document.createElement('button');
+      btn.innerHTML = names[index];
+      btn.style.padding = "24px 64px";
+      div.appendChild(btn);
+      btn.addEventListener('click', function(e) {
+        socket.emit('votePlayer', playerIndex, index);
+      });
+
+    }
+  });
+});
+
+  /*
   var div = document.getElementById('gameview');
-  if (localPlayers[0] && 0 != index) {
+  if (localPlayers[0] && (0 != index)) {
     var player0 = document.createElement('button');
     player0.innerHTML = localPlayers[0].name;
     player0.style.padding = "24px 64px";
@@ -112,6 +129,7 @@ socket.on('vote', function(localPlayers, index, room) {
     });
   }
 });
+*/
 
 function onMessage(text) {
   var list = document.getElementById('chat');
