@@ -92,11 +92,12 @@ function onConnect(socket) {
         player.sock.emit('gamemsg', 'Game is starting, you are player ' + index);
       });
       // Main game loop.
-
-      server.
       var category = pickCategory(socket, localPlayers, categoryIndex, roomcode);
       startTimer(10, 'category', roomcode);
-      setTimeout(deadFunc, 10.5*1000);
+      var category =
+      server.on('categoryPicked', function(picked) {
+        var category = picked;
+      });
       console.log(category);
       var faker = chooseFaker(localPlayers);
       var question = getQuestion(category);
@@ -171,12 +172,12 @@ function pickCategory(host, players, index, roomcode) {
     if (category == 'point') {
       host.emit('msg', 'Category is point');
       chosen = 1;
-      return 'point';
+      server.emit('categoryPicked','point');
     }
     else if (category == 'hand') {
       host.emit('msg', 'Category is hand');
       chosen = 1;
-      return 'hand';
+      server.emit('categoryPicked','hand');
     }
 
   });
@@ -184,7 +185,7 @@ function pickCategory(host, players, index, roomcode) {
     console.log(chosen);
     if (chosen == 0) {
       host.emit('msg', 'Category is point');
-      return 'point';
+      server.emit('categoryPicked', 'point');
     }
   }, 10.5*1000);
 }
