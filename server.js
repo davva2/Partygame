@@ -17,7 +17,7 @@ var allPlayers = [];
 var categoryIndex = 1;
 
 io.on('connection', onConnect);
-
+var votedForFaker = 100;
 var rooms = [];
 
 function onConnect(socket) {
@@ -51,7 +51,7 @@ function onConnect(socket) {
         socket.emit('msg', 'Sorry, game is full.');
         return;
       }
-      else allPlayers.push({sock:socket, name:inputName});
+      else allPlayers.push({sock:socket, name:inputName, score:0});
       if (roomArray.length > 1) io.emit('gameready');
 
       socket.join(room);
@@ -95,13 +95,19 @@ function onConnect(socket) {
       setTimeout(deadFunc, 10.5*1000);
       console.log(category);
       var faker = chooseFaker(localPlayers);
-
       var question = getQuestion(category);
       console.log(question);
       sendQuestion(localPlayers, faker, category, question);
       //Count down on host
       //Clear host and players
       //Vote and show count on host
+
+      vote(localPlayers, roomcode);
+      io.to(roomcode).on('votePlayer', function(votePlayer, fromPlayer){
+        if (votePlayer == faker) {
+          localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
+        }
+      });
       //clear and repeat
 
       //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
@@ -194,6 +200,13 @@ function startTimer(timer, type, room) {
       }
     }, 1000);
 }
+
+
+function vote(localPlayers, room) {
+  localPlayers.forEach((player, index) => {
+    player.sock.emit('vote', localPlayers, index, room);
+  }
+);}
 
 function generateRoomCode() {
   var text = "";

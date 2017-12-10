@@ -37,6 +37,82 @@ socket.on('pickCategory', function() {
   div.appendChild(choice2);
 });
 
+socket.on('vote', function(localPlayers, index, room) {
+  var div = document.getElementById('gameview');
+  if (localPlayers[0] && 0 != index) {
+    var player0 = document.createElement('button');
+    player0.innerHTML = localPlayers[0].name;
+    player0.style.padding = "24px 64px";
+    div.appendChild(player0);
+    player0.addEventListener('click', function(e) {
+      socket.emit('votePlayer', 0, index);
+    });
+  }
+  if (localPlayers[1] && 1 != index) {
+    var player1 = document.createElement('button');
+    player1.innerHTML = localPlayers[1].name;
+    player1.style.padding = "24px 64px";
+    div.appendChild(player1);
+    player1.addEventListener('click', function(e) {
+      socket.emit('votePlayer', 1, index);
+    });
+  }
+  if (localPlayers[2] && 2 != index) {
+    var player2 = document.createElement('button');
+    player2.innerHTML = localPlayers[2].name;
+    player2.style.padding = "24px 64px";
+    div.appendChild(player2);
+    player2.addEventListener('click', function(e) {
+      socket.emit('votePlayer', 2, index);
+    });
+  }
+  if (localPlayers[3] && 3 != index) {
+    var player3 = document.createElement('button');
+    player3.innerHTML = localPlayers[3].name;
+    player3.style.padding = "24px 64px";
+    div.appendChild(player3);
+    player3.addEventListener('click', function(e) {
+      socket.emit('votePlayer', 3, index);
+    });
+  }
+  if (localPlayers[4] && 4 != index) {
+    var player4 = document.createElement('button');
+    player4.innerHTML = localPlayers[4].name;
+    player4.style.padding = "24px 64px";
+    div.appendChild(player4);
+    player4.addEventListener('click', function(e) {
+      socket.emit('votePlayer', 4, index);
+    });
+  }
+  if (localPlayers[5] && 5 != index) {
+    var player5 = document.createElement('button');
+    player5.innerHTML = localPlayers[5].name;
+    player5.style.padding = "24px 64px";
+    div.appendChild(player5);
+    player5.addEventListener('click', function(e) {
+      socket.emit('votePlayer', 5, index);
+    });
+  }
+  if (localPlayers[6] && 6 != index) {
+    var player6 = document.createElement('button');
+    player6.innerHTML = localPlayers[6].name;
+    player6.style.padding = "24px 64px";
+    div.appendChild(player6);
+    player6.addEventListener('click', function(e) {
+      socket.emit('votePlayer', 6, index);
+    });
+  }
+  if (localPlayers[7] && 7 != index) {
+    var player7 = document.createElement('button');
+    player7.innerHTML = localPlayers[7].name;
+    player7.style.padding = "24px 64px";
+    div.appendChild(player7);
+    player7.addEventListener('click', function(e) {
+      socket.emit('votePlayer', 7, index);
+    });
+  }
+});
+
 function onMessage(text) {
   var list = document.getElementById('chat');
   var content = document.createElement('li');
