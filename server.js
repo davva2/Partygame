@@ -11,6 +11,9 @@ let path = require('path');
 let ip = require('ip');
 let Partygame = require('./Partygame');
 
+var EventEmitter = require("events").EventEmitter;
+var ee = new EventEmitter();
+
 var allClients = [];
 var allPlayers = [];
 
@@ -89,9 +92,10 @@ function onConnect(socket) {
         player.sock.emit('gamemsg', 'Game is starting, you are player ' + index);
       });
       // Main game loop.
+
+      server.
       var category = pickCategory(socket, localPlayers, categoryIndex, roomcode);
       startTimer(10, 'category', roomcode);
-
       setTimeout(deadFunc, 10.5*1000);
       console.log(category);
       var faker = chooseFaker(localPlayers);
@@ -102,12 +106,12 @@ function onConnect(socket) {
       //Clear host and players
       //Vote and show count on host
 
-      vote(localPlayers, roomcode);
+      vote(localPlayers);/*
       io.to(roomcode).on('votePlayer', function(votePlayer, fromPlayer){
         if (votePlayer == faker) {
           localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
         }
-      });
+      });*/
       //clear and repeat
 
       //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
@@ -202,11 +206,16 @@ function startTimer(timer, type, room) {
 }
 
 
-function vote(localPlayers, room) {
+function vote(localPlayers) {
+  names = [];
   localPlayers.forEach((player, index) => {
-    player.sock.emit('vote', localPlayers, index, room);
-  }
-);}
+    names.push(player.name);
+    });
+
+  localPlayers.forEach((player, index) => {
+    player.sock.emit('vote', names, index);
+  });
+}
 
 function generateRoomCode() {
   var text = "";
