@@ -94,25 +94,32 @@ function onConnect(socket) {
       // Main game loop.
       var category = pickCategory(socket, localPlayers, categoryIndex, roomcode);
       startTimer(10, 'category', roomcode);
-      var category =
       server.on('categoryPicked', function(picked) {
         var category = picked;
       });
-      console.log(category);
+      console.log('Category is: ' + category);
       var faker = chooseFaker(localPlayers);
       var question = getQuestion(category);
-      console.log(question);
+      console.log('Question is: ' + question);
       sendQuestion(localPlayers, faker, category, question);
       //Count down on host
       //Clear host and players
       //Vote and show count on host
-
-      vote(localPlayers);/*
+      var fakerVotes = 0;
+      vote(localPlayers);
       io.to(roomcode).on('votePlayer', function(votePlayer, fromPlayer){
+        console.log('VotePlayer: ' + votePlayer);
+        console.log('fromPlayer: ' + fromPlayer);
+        console.log('Faker: ' + faker);
         if (votePlayer == faker) {
+          console.log('fakerVotes: ' + fakerVotes);
+          fakerVotes++;
           localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
         }
-      });*/
+        if (fakerVotes >= (localPlayers/2)){
+          host.emit('msg', 'The faker is found! It was: ' + localPlayers[faker].name);
+        }
+      });
       //clear and repeat
 
       //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
@@ -139,6 +146,7 @@ function getQuestion(category){
   if(category == 'hand'){
     return 'Räck upp din hand om du heter Anton.';
   }
+  return "test";
 }
 
 //Send question to all players except for the faker
@@ -179,18 +187,15 @@ function pickCategory(host, players, index, roomcode) {
       chosen = 1;
       server.emit('categoryPicked','hand');
     }
-
   });
   setTimeout(function checkTimeout() {
-    console.log(chosen);
+    console.log("Chosen is :" + chosen);
     if (chosen == 0) {
-      host.emit('msg', 'Category is point');
+      host.emit('msg', 'No one picked a category, therefore it is randomly set to point.');
       server.emit('categoryPicked', 'point');
     }
   }, 10.5*1000);
 }
-
-
 
 function startTimer(timer, type, room) {
     var k = setInterval(function () {
