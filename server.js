@@ -87,6 +87,7 @@ function onConnect(socket) {
         }
       });
       // Game loop
+
       rounds = 0;
         server.on('startRound', function(currentRound){
             if (currentRound > 1) return;
@@ -194,14 +195,42 @@ socket.on('disconnect', function() {
 });
 }
 
+function loadJSON(callback) {
+  var xobj = new XMLHttpRequest();
+  xobj.overrideMimeType("application/json");
+  xobj.open('GET', 'questions.json', true);
+  xobj.onreadystatechange = function () {
+    if (xobj.readyState == 4 && xobj.status == "200") {
+      callback(xobj.responseText);
+    }
+  };
+  xobj.send(null);
+}
+
+
+var pointQ = [
+        "Point at the person with most cats." ,
+        "Point at the person who is best at lying.",
+        "Point at the person with best cooking skills."
+      ];
+
+var handQ = [
+        "Hands up if you ate pizza today" ,
+        "Hands up if you like water.",
+        "Hands up if you play videogames every day."
+      ];
+
 
 //Get question from file depending on category
 function getQuestion(category){
+
   if(category == 'point'){
-    return 'Peka på Anton';
+    var q = pointQ[Math.floor(Math.random() * pointQ.length)];
+    console.log(q);
+    return q;
   }
   if(category == 'hand'){
-    return 'Räck upp din hand om du heter Anton.';
+    return handQ[Math.floor(Math.random() * handQ.length)];
   }
 }
 
@@ -292,6 +321,11 @@ function generateRoomCode() {
   return text;
 }
 function deadFunc(){}
+
+
+
+
+
 
 // Serve index.html as root page
 app.get('/', function(req, res) {
