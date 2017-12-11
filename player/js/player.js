@@ -151,7 +151,6 @@ NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
 // Timer function for
 function timerFunc(timer) {
   var display = document.getElementById('timediv');
-
   display.textContent = timer;
 }
 

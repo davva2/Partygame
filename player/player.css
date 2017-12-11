@@ -2,7 +2,7 @@ body {
 
 }
 
-.gameview {
+.wrapper {
   margin: auto;
   width: 30%;
 }
@@ -25,4 +25,11 @@ body {
     left:50%;
     margin-left:-75px;
     font-size: 32px;
+}
+
+#timediv {
+  font-size: 32px;
+  position: fixed;
+  left: 50vw;
+  top: 50vh;
 }

@@ -17,7 +17,6 @@ socket.on('timer', timerFunc)
 socket.on('timeout', timeoutFunc);
 socket.on('msg', onMessage);
 
-
 /*
 socket.on('pickCategory', function() {
   var disp = document.getElementById("time");
@@ -31,6 +30,7 @@ function displayStartButton() {
   document.getElementById('startButton').style.visibility = "visible";
   btn.addEventListener('click', function(e) {
     socket.emit('startgame');
+    onMessage('Game has been started!');
     document.getElementById('startButton').style.visibility = "hidden";
 
   });
@@ -54,6 +54,19 @@ function timeoutFunc(type) {
   var display = document.getElementById('timediv');
   display.textContent = '';
 }
+/*
+//Removes everything inside of the gameview div
+function clear() {
+  document.getElementsByClassName('gameview').remove();
+  var content = document.createElement('div');
+  var timediv = document.createElement('div');
+  timediv.id = "timediv";
+  content.className = "gameview";
+  content.id = "gameview";
+  var append = document.getElementById('wrap');
+  append.appendChild(content);
+  append.appendChild(timediv);
+}*/
 
 /////
 /*

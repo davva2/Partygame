@@ -12,3 +12,10 @@ body {
   height: auto;
   font-size: 1.5vw;
 }
+
+#timediv {
+  font-size: 32px;
+  position: fixed;
+  left: 50vw;
+  top: 50vh;
+}
