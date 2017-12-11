@@ -22,6 +22,7 @@ var categoryIndex = 1;
 io.on('connection', onConnect);
 var votedForFaker = 100;
 var rooms = [];
+var abortTimer = 0;
 
 function onConnect(socket) {
 
@@ -30,7 +31,7 @@ function onConnect(socket) {
   socket.on('player', clientLoop);
   function clientLoop() {
 
-    socket.emit('msg', 'Hello! Welcome new player. Please choose a name.');
+    socket.emit('msg', 'Hello! Welcome new player. Please choose a name and then input the roomcode.');
 
     socket.on('input', function (inputName, inputRoom) {
       roomIndex = rooms.indexOf(inputRoom);
@@ -242,6 +243,10 @@ players[index].sock.on('category', function(categoryFromPlayer) {
     chosen = 1;
   }
   category = categoryFromPlayer;
+  
+// Ska vi ha denna?
+//  abortTimer = 1;
+
 });
 setTimeout(function checkTimeout() {
   if (chosen == 0) {
@@ -254,7 +259,7 @@ setTimeout(function checkTimeout() {
 
 function startTimer(timer, type, room, variables, nextStop) {
   var k = setInterval(function () {
-    if (timer > 0) {
+    if (timer > 0 && abortTimer == 0) {
       timer = timer-1;
       io.to(room).emit('timer', timer);
     }
@@ -262,6 +267,7 @@ function startTimer(timer, type, room, variables, nextStop) {
       io.to(room).emit('timeout', type);
       server.emit(nextStop, variables);
       clearInterval(k);
+      abortTimer = 0;
     }
   }, 1000);
 }
