@@ -7,16 +7,16 @@
 </head>
 <body>
 
-  <div class="wrapper">
+  <div class="wrapper" id="wrap">
+    <div id="display">
+    </div>
+    <button id="startButton" style="visibility:hidden">Everybody's ready!</button>
     <div class="gameview" id="gameview">
       <div id="timediv">
       </div>
       <div class="main">
-        <div id="display">
-        </div>
         <ul id="chat"></ul>
       </div>
-      <button id="startButton" style="visibility:hidden">Everybody's ready!</button>
     </div>
   </div>
   <script src="/socket.io/socket.io.js"></script>
