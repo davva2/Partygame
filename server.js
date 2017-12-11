@@ -67,7 +67,7 @@ function onConnect(socket) {
   socket.on('host', hostLoop);
 
   function hostLoop() {
-
+    var host = socket;
     //var roomcode = generateRoomCode();
     var roomcode = "A";
     rooms.push(roomcode);
@@ -87,53 +87,101 @@ function onConnect(socket) {
         }
       });
       // Game loop
+      rounds = 0;
+        server.on('startRound', function(currentRound){
+            if (currentRound > 1) return;
+            host.emit('clear');
+            host.emit('msg', 'Game is starting with as player 1 ');
+              localPlayers.forEach((player, index) => {
+                player.sock.emit('clear');
+                player.sock.emit('gamemsg', 'Game is starting, you are player ' + index);
+              });
+              // Main game loop.
+              var category = pickCategory(socket, localPlayers, categoryIndex, roomcode);
+              startTimer(10, 'category', roomcode);
+              server.on('categoryPicked', function(picked) {
+                category = picked;
+                var faker = chooseFaker(localPlayers);
+                var question = getQuestion(category);
+                var variables = [category, faker, question];
+                localPlayers.forEach((player, index) => {
+                  player.sock.emit('clear');
+                });
+                sendQuestion(localPlayers, faker, category, question);
+                startTimer(10, 'startVote', roomcode, variables, 'gameEvent');
+              });
+              server.on('gameEvent', function(variables){
+                var faker = variables[1];
+                var question = variables[2];
+                localPlayers.forEach((player, index) => {
+                  player.sock.emit('clear');
+                  player.sock.emit('gamemsg', 'Vote for the player that you think is the faker.');
+                });
+                vote(localPlayers);
+                  var fakerVotes = 0;
+                  localPlayers.forEach((player, index) => {
+                    player.sock.on('votePlayer', function(votePlayer, fromPlayer){
+                      if (votePlayer == faker) {
+                        fakerVotes++;
+                        localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
+                        console.log(localPlayers[fromPlayer].score);
+                      }
+                      localPlayers[fromPlayer].sock.emit('clear');
+                    });
+                  });
 
-      localPlayers.forEach((player, index) => {
-        player.sock.emit('clear');
-        player.sock.emit('gamemsg', 'Game is starting, you are player ' + index);
-      });
-      // Main game loop.
-      var category = pickCategory(socket, localPlayers, categoryIndex, roomcode);
-      startTimer(10, 'category', roomcode);
-      server.on('categoryPicked', function(picked) {
-        category = picked;
-        var faker = chooseFaker(localPlayers);
-        var question = getQuestion(category);
-        var variables = [category, faker, question];
-        localPlayers.forEach((player, index) => {
-          player.sock.emit('clear');
-          player.sock.emit('gamemsg', question);
-        });
-        startTimer(10, 'startVote', roomcode, variables, 'gameEvent');
-      });
-      server.on('gameEvent', function(variables){
-        var faker = variables[1];
-        var question = variables[2];
-          localPlayers.forEach((player, index) => {
-            player.sock.emit('clear');
-            player.sock.emit('gamemsg', 'Vote for the player that you think is the faker.');
-          });
-        sendQuestion(localPlayers, faker, category, question);
-        startTimer(20, 'startVote', roomcode, [faker,question], 'startVote');
-        server.on('startVote', function(variables){
-          vote(localPlayers);
-        });
-      });/*
+                    /*
+                  io.to(roomcode).on('votePlayer', function(votePlayer, fromPlayer){
+                    if (votePlayer == faker) {
+                      fakerVotes++;
+                      localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
+                      console.log(localPlayers[fromPlayer].score);
+                    }
+                    localPlayers[fromPlayer].sock.emit('clear');
+                  });
+                  */
+                  startTimer(20, '', roomcode, [faker,question], 'startVote');
+                  server.on('startVote', function(variables){
+                    localPlayers.forEach((player, index) => {
+                      player.sock.emit('clear');
+                    });
+                    host.emit('msg', 'Voting finished!');
+                    if (fakerVotes >= (localPlayers.length/2)){
+                      host.emit('msg', 'The faker is found! It was: ' + localPlayers[faker].name);
+                    }
+                    else {
+                      host.emit('msg', 'The faker is still at large!');
+                      localPlayers[faker].score = localPlayers[faker].score + 100;
+                    }
+                    startTimer(5, '', roomcode, faker, 'roundEnd');
+                    server.on('roundEnd', function(variables) {
+                      rounds++;
+                      server.emit('startRound2', rounds);
+                    });
+                  });
+                });
+
+              });
+
+      //function results
+
+      /*
       });
       //Count down on host
       //Clear host and players
       //Vote and show count on host
 
-      io.to(roomcode).on('votePlayer', function(votePlayer, fromPlayer){
-      if (votePlayer == faker) {
-      localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
-    }
+
   });*/
   //clear and repeat
 
-  //  var roomUsers = io.sockets.adapter.rooms[roomcode].sockets;
-});
-}
+  server.emit('startRound', rounds);
+  server.on('startRound2', function(currentRound){
+    server.emit('startRound', currentRound);
+  });
+  });
+  }
+
 
 socket.on('disconnect', function() {
   console.log('Got disconnect!');
@@ -184,25 +232,28 @@ function pickCategory(host, players, index, roomcode) {
 
 players[index].sock.emit('pickCategory');
 var chosen = 0;
-players[index].sock.on('category', function(category) {
-  if (category == 'point') {
+var category;
+players[index].sock.on('category', function(categoryFromPlayer) {
+  if (categoryFromPlayer == 'point') {
     host.emit('msg', 'Category is point');
     chosen = 1;
-    server.emit('categoryPicked','point');
   }
-  else if (category == 'hand') {
+  else if (categoryFromPlayer == 'hand') {
     host.emit('msg', 'Category is hand');
     chosen = 1;
-    server.emit('categoryPicked','hand');
   }
-  abortTimer = 1;
+  category = categoryFromPlayer;
+  
+// Ska vi ha denna?
+//  abortTimer = 1;
+
 });
 setTimeout(function checkTimeout() {
-  console.log(chosen);
   if (chosen == 0) {
-    host.emit('msg', 'Category is point');
-    server.emit('categoryPicked', 'point');
+    //host.emit('msg', 'Category is point');
+    category = 'point';
   }
+  server.emit('categoryPicked', category);
 }, 10.5*1000);
 }
 

@@ -45,11 +45,11 @@ socket.on('vote', function (names, playerIndex) {
       var btn = document.createElement('button');
       btn.innerHTML = names[index];
       btn.style.padding = "24px 64px";
-      div.appendChild(btn);
       btn.addEventListener('click', function(e) {
-        socket.emit('votePlayer', playerIndex, index);
+        socket.emit('votePlayer', index, playerIndex);
+        console.log('votar');
       });
-
+      div.appendChild(btn);
     }
   });
 });
