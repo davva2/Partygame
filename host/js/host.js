@@ -16,6 +16,8 @@ socket.on('gameready', displayStartButton);
 socket.on('timer', timerFunc)
 socket.on('timeout', timeoutFunc);
 socket.on('msg', onMessage);
+socket.on('clear', clear)
+//socket.on('gamemsg', gameMessage);
 
 /*
 socket.on('pickCategory', function() {
@@ -23,6 +25,17 @@ socket.on('pickCategory', function() {
   startTimer(20, disp, 'categoryTimeout');
 });
 */
+
+Element.prototype.remove = function() {
+  this.parentElement.removeChild(this);
+};
+NodeList.prototype.remove = HTMLCollection.prototype.remove = function() {
+  for(var i = this.length - 1; i >= 0; i--) {
+    if(this[i] && this[i].parentElement) {
+      this[i].parentElement.removeChild(this[i]);
+    }
+  }
+};
 
 
 function displayStartButton() {
@@ -37,12 +50,19 @@ function displayStartButton() {
 }
 
 function onMessage(text) {
-  var list = document.getElementById('chat');
+  var list = document.getElementById('gameview');
   var content = document.createElement('li');
   content.innerHTML = text;
   list.appendChild(content);
 }
-
+/*
+function gameMessage(text) {
+  var list = document.getElementById('gameview');
+  var content = document.createElement('li');
+  content.innerHTML = text;
+  list.appendChild(content);
+}
+*/
 // Timer function for
 function timerFunc(timer) {
   var display = document.getElementById('timediv');
@@ -54,7 +74,9 @@ function timeoutFunc(type) {
   var display = document.getElementById('timediv');
   display.textContent = '';
 }
-/*
+
+
+
 //Removes everything inside of the gameview div
 function clear() {
   document.getElementsByClassName('gameview').remove();
@@ -66,7 +88,7 @@ function clear() {
   var append = document.getElementById('wrap');
   append.appendChild(content);
   append.appendChild(timediv);
-}*/
+}
 
 /////
 /*
