@@ -103,7 +103,7 @@ function onConnect(socket) {
           player.sock.emit('clear');
           player.sock.emit('gamemsg', question);
         });
-        startTimer(10, 'startVote', room, variables, 'gameEvent');
+        startTimer(10, 'startVote', roomcode, variables, 'gameEvent');
       });
       server.on('gameEvent', function(variables){
         var faker = variables[1];
@@ -113,11 +113,9 @@ function onConnect(socket) {
             player.sock.emit('gamemsg', 'Vote for the player that you think is the faker.');
           });
         sendQuestion(localPlayers, faker, category, question);
-        startTimer(20, 'startVote', room, [faker,question], 'startVote');
-
+        startTimer(20, 'startVote', roomcode, [faker,question], 'startVote');
         server.on('startVote', function(variables){
           vote(localPlayers);
-
         });
       });/*
       });
@@ -215,10 +213,10 @@ function startTimer(timer, type, room, variables, nextStop) {
     }
     else{
       io.to(room).emit('timeout', type);
+      server.emit(nextStop, variables);
       clearInterval(k);
     }
   }, 1000);
-  server.emit(nextStop, variables);
 }
 
 function vote(localPlayers) {
