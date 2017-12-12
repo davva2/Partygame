@@ -56,7 +56,7 @@ function onConnect(socket) {
       }
       // Get amount of players in current room.
       var roomArray = io.sockets.adapter.rooms[inputRoom];
-      if (roomArray.length > 3) {
+      if (roomArray.length > 6) {
         socket.emit('gamemsg', 'Sorry, game is full.');
         return;
       }
@@ -83,6 +83,7 @@ function onConnect(socket) {
     socket.join(roomcode);
 
     socket.on('startgame', function() {
+      socket.removeAllListeners();
       var localPlayers = [];
       //If a player is in host's room, push it into localPlayers
       //var localPlayers = io.sockets.adapter.rooms[roomcode];
@@ -115,7 +116,7 @@ function onConnect(socket) {
               // Main game loop.
               var category = pickCategory(socket, localPlayers, categoryIndex, roomcode);
               startTimer(10, 'category', roomcode);
-              server.on('categoryPicked', function(picked) {
+              server.once('categoryPicked', function(picked) {
                 category = picked;
                 var faker = chooseFaker(localPlayers);
                 var question = getQuestion(category);
@@ -160,7 +161,7 @@ function onConnect(socket) {
                       localPlayers[faker].score = localPlayers[faker].score + 100;
                     }
                     startTimer(5, '', roomcode, faker, 'roundEnd');
-                    server.on('roundEnd', function(variables) {
+                    server.once('roundEnd', function(variables) {
                       rounds++;
                       server.emit('startRound2', rounds);
                     });
