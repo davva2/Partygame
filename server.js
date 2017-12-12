@@ -149,7 +149,7 @@ function onConnect(socket) {
                 localPlayers.forEach((player, index) => {
                   player.sock.emit('clear');
                 });
-                host.emit('msg', 'Wait for the timer and do the task when it runs out.');
+                //host.emit('msg', 'Wait for the timer and do the task when it runs out.');
                 sendQuestion(localPlayers, faker, category, question);
                 startTimer(10, 'startVote', roomcode, variables, 'votePrep');
               });
@@ -188,6 +188,7 @@ function onConnect(socket) {
                     localPlayers.forEach((player, index) => {
                       player.sock.emit('clear');
                     });
+                    host.emit('clear');
                     host.emit('msg', 'Voting finished!');
                     if (fakerVotes == (localPlayers.length - 1)){
                       host.emit('clear');
@@ -219,13 +220,14 @@ function onConnect(socket) {
               //outer loop
               server.emit('startRound', rounds);
               server.on('startRound2', function(currentRound){
-                if(currentRound == 3) {
+                console.log('fakerCount is ' + fakerCount);
+                if(((currentRound % 3) == 0) && (fakerCount != 2)) {
                   faker = null;
+                  console.log('nulling faker');
                   category = null;
-                  console.log(fakerCount);
                   currentRound = 0;
                 }
-                if ((fakerCount == 2) && (currentRound == 3)) {
+                if ((fakerCount >= 2) && (currentRound % 3) == 0) {
                   console.log('game will end');
                   host.emit('clear');
                   host.emit('msg', 'Game over!');
