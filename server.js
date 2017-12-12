@@ -122,7 +122,7 @@ function onConnect(socket) {
             socket.removeAllListeners();
             if (currentRound > 2) return; //server.emit('gameloop2');
             host.emit('clear');
-            host.emit('msg', 'Game is starting with as player 1 ');
+            host.emit('msg', 'Game is starting');
               localPlayers.forEach((player, index) => {
                 player.sock.removeAllListeners();
                 player.sock.emit('clear');
@@ -324,7 +324,7 @@ players[index].sock.once('category', function(categoryFromPlayer) {
 });
 setTimeout(function checkTimeout() {
   if (chosen == 0) {
-    //host.emit('msg', 'Category is point');
+    host.emit('msg', 'No category was chosen therefore it is randomly chosen as: "You gotta point"');
     category = 'point';
   }
   server.emit('categoryPicked', category);
