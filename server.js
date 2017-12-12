@@ -103,7 +103,7 @@ function onConnect(socket) {
           newSocket.emit('gamemsg', 'Successfully reconnected.');
           }
 
-        })
+        });
       });
       // Game loop
 
@@ -148,9 +148,19 @@ function onConnect(socket) {
                 localPlayers.forEach((player, index) => {
                   player.sock.emit('clear');
                 });
+                host.emit('msg', 'Wait for the timer and do the task when it runs out.');
                 sendQuestion(localPlayers, faker, category, question);
-                startTimer(10, 'startVote', roomcode, variables, 'gameEvent');
+                startTimer(10, 'startVote', roomcode, variables, 'votePrep');
               });
+
+              server.on('votePrep', function(variables){
+                localPlayers.forEach((player, index) => {
+                  player.sock.emit('clear');
+                  player.sock.emit('gamemsg', 'Do the task!');
+                });
+                startTimer(7, '', roomcode, variables, 'gameEvent');
+              });
+
               server.once('gameEvent', function(variables){
                 var faker = variables[1];
                 var question = variables[2];
@@ -179,8 +189,17 @@ function onConnect(socket) {
                     });
                     host.emit('msg', 'Voting finished!');
                     if (fakerVotes == (localPlayers.length - 1)){
+                      host.emit('clear');
                       host.emit('msg', 'The faker is found! It was: ' + localPlayers[faker].name);
+
+                      host.emit('msg', 'The score is: ');
+                      localPlayers.forEach((player, index) => {
+                        host.emit('msg', player.name + ': ' + player.score);
+                      });
+                      startTimer(20, '', roomcode, faker, 'roundEnd');
+
                       rounds = 2;
+
                       // SCORE HERE
                       //server.emit('gameloop2');
                     }
@@ -238,7 +257,7 @@ function onConnect(socket) {
         server.emit('gameloop');
         server.on('gameloop2', function(){
           server.emit('gameloop');
-        })
+        });
       });
     }
 
@@ -298,9 +317,11 @@ function sendQuestion(localPlayers, faker, category, question){
   localPlayers.forEach((player, index) => {
     if (index == faker) {
       player.sock.emit('gamemsg', 'Youre the faker, try to blend in. The category is ' + category);
+      player.sock.emit('gamemsg', 'Wait! Do the task when the timer runs out...');
     }
     else {
       player.sock.emit('gamemsg', question);
+      player.sock.emit('gamemsg', 'Wait! Do the task when the timer runs out...');
     }
   });
 }
