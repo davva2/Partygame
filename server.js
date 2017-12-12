@@ -120,7 +120,7 @@ function onConnect(socket) {
 
         server.on('startRound', function(currentRound){
             socket.removeAllListeners();
-            if (currentRound > 2) return; //server.emit('gameloop2');
+            if (currentRound > 3) return; //server.emit('gameloop2');
             host.emit('clear');
             host.emit('msg', 'Game is starting');
               localPlayers.forEach((player, index) => {
@@ -180,9 +180,8 @@ function onConnect(socket) {
                     host.emit('msg', 'Voting finished!');
                     if (fakerVotes == (localPlayers.length - 1)){
                       host.emit('msg', 'The faker is found! It was: ' + localPlayers[faker].name);
-
+                      rounds = 2;
                       // SCORE HERE
-                      return;
                       //server.emit('gameloop2');
                     }
                     else {
@@ -201,6 +200,21 @@ function onConnect(socket) {
               //outer loop
               server.emit('startRound', rounds);
               server.on('startRound2', function(currentRound){
+                if(currentRound == 3) {
+                  faker = null;
+                  category = null;
+                  console.log(fakerCount);
+                  currentRound = 0;
+                }
+                if (fakerCount == 2) {
+                  console.log('game will end');
+                  host.emit('clear');
+                  host.emit('msg', 'Game over!');
+                  localPlayers.forEach((player, index) => {
+                    host.emit('msg', (player.name + ' got ' + player.score + 'points.'));
+                  })
+                  return;
+                }
                 server.emit('startRound', currentRound);
               });
 
