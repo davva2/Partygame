@@ -119,8 +119,9 @@ function onConnect(socket) {
         var rounds = 0;
 
         server.on('startRound', function(currentRound){
+            console.log('currentRound is ' + currentRound);
             socket.removeAllListeners();
-            if (currentRound > 3) return; //server.emit('gameloop2');
+            //if (currentRound > 3) return; //server.emit('gameloop2');
             host.emit('clear');
             host.emit('msg', 'Game is starting');
               localPlayers.forEach((player, index) => {
@@ -191,13 +192,10 @@ function onConnect(socket) {
                     if (fakerVotes == (localPlayers.length - 1)){
                       host.emit('clear');
                       host.emit('msg', 'The faker is found! It was: ' + localPlayers[faker].name);
-
-                      host.emit('msg', 'The score is: ');
+                      /*host.emit('msg', 'The score is: ');
                       localPlayers.forEach((player, index) => {
                         host.emit('msg', player.name + ': ' + player.score);
-                      });
-                      startTimer(20, '', roomcode, faker, 'roundEnd');
-
+                      }); */
                       rounds = 2;
 
                       // SCORE HERE
@@ -206,9 +204,11 @@ function onConnect(socket) {
                     else {
                       host.emit('msg', 'The faker is still at large!');
                       localPlayers[faker].score = localPlayers[faker].score + 200;
+
                     }
-                    startTimer(5, '', roomcode, faker, 'roundEnd');
+                    startTimer(7, '', roomcode, faker, 'roundEnd');
                     server.once('roundEnd', function(variables) {
+                      console.log(rounds);
                       rounds++;
                       server.emit('startRound2', rounds);
                     });
@@ -225,13 +225,13 @@ function onConnect(socket) {
                   console.log(fakerCount);
                   currentRound = 0;
                 }
-                if (fakerCount == 2) {
+                if ((fakerCount == 2) && (currentRound == 3)) {
                   console.log('game will end');
                   host.emit('clear');
                   host.emit('msg', 'Game over!');
                   localPlayers.forEach((player, index) => {
                     host.emit('msg', (player.name + ' got ' + player.score + 'points.'));
-                  })
+                  });
                   return;
                 }
                 server.emit('startRound', currentRound);
@@ -344,11 +344,11 @@ var chosen = 0;
 var category;
 players[index].sock.once('category', function(categoryFromPlayer) {
   if (categoryFromPlayer == 'point') {
-    host.emit('msg', 'Category is point');
+    host.emit('msg', (players[index].name + ' has chosen You Gotta Point!'));
     chosen = 1;
   }
   else if (categoryFromPlayer == 'hand') {
-    host.emit('msg', 'Category is hand');
+    host.emit('msg', (players[index].name + ' has chosen Hands Up!'));
     chosen = 1;
   }
   category = categoryFromPlayer;

@@ -13,10 +13,10 @@ function gameLobby(ip, roomcode) {
 }
 
 socket.on('gameready', displayStartButton);
-socket.on('timer', timerFunc)
+socket.on('timer', timerFunc);
 socket.on('timeout', timeoutFunc);
 socket.on('msg', onMessage);
-socket.on('clear', clear)
+socket.on('clear', clear);
 //socket.on('gamemsg', gameMessage);
 
 /*
