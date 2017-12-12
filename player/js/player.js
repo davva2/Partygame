@@ -24,9 +24,11 @@ socket.on('pickCategory', function() {
   var choice2 = document.createElement('button');
   choice1.onclick = function(e){
     socket.emit('category', 'point');
+    clear();
   }
   choice2.onclick = function(e){
     socket.emit('category', 'hand');
+    clear();
   }
   /*
   choice1.addEventListener('click', function(e){
