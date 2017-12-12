@@ -196,8 +196,6 @@ function onConnect(socket) {
                       localPlayers.forEach((player, index) => {
                         host.emit('msg', player.name + ': ' + player.score);
                       });
-                      startTimer(20, '', roomcode, faker, 'roundEnd');
-
                       rounds = 2;
 
                       // SCORE HERE
