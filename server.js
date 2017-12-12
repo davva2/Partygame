@@ -31,28 +31,33 @@ function onConnect(socket) {
   socket.on('player', clientLoop);
   function clientLoop() {
 
-    socket.emit('msg', 'Hello! Welcome new player. Please choose a name and then input the roomcode.');
+    socket.emit('gamemsg', 'Hello! Welcome new player. Please choose a name and then input the roomcode.');
 
     socket.on('input', function (inputName, inputRoom) {
       roomIndex = rooms.indexOf(inputRoom);
       room = rooms[roomIndex];
 
       if (roomIndex == -1) {
-        socket.emit('msg', 'Not an existing room!');
+        socket.emit('gamemsg', 'Not an existing room!');
         return;
       }
 
       //Check if connected player is a player
+
       for (var i = 0; i < allPlayers.length; i++) {
         if (allPlayers[i].name == inputName) {
           io.emit('msg', inputName + ' has reconnected!');
           // Rewrite reconnected allPlayers socket
+          server.emit('reconnect', allPlayers[i].name, socket);
+          socket.join(room);
+          socket.emit('name', inputName);
+          return;
         }
       }
       // Get amount of players in current room.
       var roomArray = io.sockets.adapter.rooms[inputRoom];
       if (roomArray.length > 3) {
-        socket.emit('msg', 'Sorry, game is full.');
+        socket.emit('gamemsg', 'Sorry, game is full.');
         return;
       }
       else allPlayers.push({sock:socket, name:inputName, score:0});
@@ -86,10 +91,20 @@ function onConnect(socket) {
           localPlayers.push(player);
         }
       });
+      server.on('reconnect', function(matchingName, newSocket){
+        localPlayers.forEach((player) => {
+          if (player.name = matchingName) {
+          player.sock = newSocket;
+          newSocket.emit('clear');
+          newSocket.emit('gamemsg', 'Successfully reconnected.');
+          }
+
+        })
+      });
       // Game loop
       rounds = 0;
         server.on('startRound', function(currentRound){
-            if (currentRound > 1) return;
+            if (currentRound > 2) return;
             host.emit('clear');
             host.emit('msg', 'Game is starting with as player 1 ');
               localPlayers.forEach((player, index) => {
@@ -110,7 +125,7 @@ function onConnect(socket) {
                 sendQuestion(localPlayers, faker, category, question);
                 startTimer(10, 'startVote', roomcode, variables, 'gameEvent');
               });
-              server.on('gameEvent', function(variables){
+              server.once('gameEvent', function(variables){
                 var faker = variables[1];
                 var question = variables[2];
                 localPlayers.forEach((player, index) => {
@@ -120,7 +135,7 @@ function onConnect(socket) {
                 vote(localPlayers);
                   var fakerVotes = 0;
                   localPlayers.forEach((player, index) => {
-                    player.sock.on('votePlayer', function(votePlayer, fromPlayer){
+                    player.sock.once('votePlayer', function(votePlayer, fromPlayer){
                       if (votePlayer == faker) {
                         fakerVotes++;
                         localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
@@ -130,18 +145,8 @@ function onConnect(socket) {
                     });
                   });
 
-                    /*
-                  io.to(roomcode).on('votePlayer', function(votePlayer, fromPlayer){
-                    if (votePlayer == faker) {
-                      fakerVotes++;
-                      localPlayers[fromPlayer].score = localPlayers[fromPlayer].score + votedForFaker;
-                      console.log(localPlayers[fromPlayer].score);
-                    }
-                    localPlayers[fromPlayer].sock.emit('clear');
-                  });
-                  */
                   startTimer(20, '', roomcode, [faker,question], 'startVote');
-                  server.on('startVote', function(variables){
+                  server.once('startVote', function(variables){
                     localPlayers.forEach((player, index) => {
                       player.sock.emit('clear');
                     });
@@ -233,7 +238,7 @@ function pickCategory(host, players, index, roomcode) {
 players[index].sock.emit('pickCategory');
 var chosen = 0;
 var category;
-players[index].sock.on('category', function(categoryFromPlayer) {
+players[index].sock.once('category', function(categoryFromPlayer) {
   if (categoryFromPlayer == 'point') {
     host.emit('msg', 'Category is point');
     chosen = 1;
@@ -243,7 +248,7 @@ players[index].sock.on('category', function(categoryFromPlayer) {
     chosen = 1;
   }
   category = categoryFromPlayer;
-  
+
 // Ska vi ha denna?
 //  abortTimer = 1;
 

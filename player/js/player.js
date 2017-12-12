@@ -2,7 +2,7 @@ var socket = io();
 
 socket.emit('player');
 
-socket.on('msg', onMessage);
+//socket.on('msg', onMessage);
 socket.on('clear', clear);
 socket.on('gamemsg', gameMessage);
 socket.on('timer', timerFunc);
@@ -22,12 +22,21 @@ function gameMessage(text) {
 socket.on('pickCategory', function() {
   var choice1 = document.createElement('button');
   var choice2 = document.createElement('button');
-  choice1.addEventListener('click', function(e) {
+  choice1.onclick = function(e){
     socket.emit('category', 'point');
-  });
-  choice2.addEventListener('click', function(e) {
+  }
+  choice2.onclick = function(e){
     socket.emit('category', 'hand');
+  }
+  /*
+  choice1.addEventListener('click', function(e){
+      socket.emit('category', 'point');
   });
+  choice2.addEventListener('click', function(e){
+    socket.emit('category', 'hand');
+  });*/
+  choice1.id = 'point';
+  choice2.id = 'hand';
   choice1.innerHTML = 'You gotta point';
   choice2.innerHTML = 'Hands up';
   choice1.style.padding = "24px 64px";
@@ -36,6 +45,10 @@ socket.on('pickCategory', function() {
   div.appendChild(choice1);
   div.appendChild(choice2);
 });
+
+function onButtonClick(type){
+  socket.emit('category', type);
+}
 
 socket.on('vote', function (names, playerIndex) {
 
