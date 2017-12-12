@@ -93,7 +93,7 @@ function onConnect(socket) {
       });
       server.on('reconnect', function(matchingName, newSocket){
         localPlayers.forEach((player) => {
-          if (player.name = matchingName) {
+          if (player.name == matchingName) {
           player.sock = newSocket;
           newSocket.emit('clear');
           newSocket.emit('gamemsg', 'Successfully reconnected.');
