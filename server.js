@@ -120,9 +120,9 @@ function onConnect(socket) {
 
         server.on('startRound', function(currentRound){
             socket.removeAllListeners();
-            if (currentRound > 2) return; //server.emit('gameloop2');
+            if (currentRound > 3) return; //server.emit('gameloop2');
             host.emit('clear');
-            host.emit('msg', 'Game is starting with as player 1 ');
+            host.emit('msg', 'Game is starting');
               localPlayers.forEach((player, index) => {
                 player.sock.removeAllListeners();
                 player.sock.emit('clear');
@@ -191,13 +191,16 @@ function onConnect(socket) {
                     if (fakerVotes == (localPlayers.length - 1)){
                       host.emit('clear');
                       host.emit('msg', 'The faker is found! It was: ' + localPlayers[faker].name);
+
                       host.emit('msg', 'The score is: ');
                       localPlayers.forEach((player, index) => {
                         host.emit('msg', player.name + ': ' + player.score);
                       });
                       startTimer(20, '', roomcode, faker, 'roundEnd');
+
+                      rounds = 2;
+
                       // SCORE HERE
-                      return;
                       //server.emit('gameloop2');
                     }
                     else {
@@ -216,6 +219,21 @@ function onConnect(socket) {
               //outer loop
               server.emit('startRound', rounds);
               server.on('startRound2', function(currentRound){
+                if(currentRound == 3) {
+                  faker = null;
+                  category = null;
+                  console.log(fakerCount);
+                  currentRound = 0;
+                }
+                if (fakerCount == 2) {
+                  console.log('game will end');
+                  host.emit('clear');
+                  host.emit('msg', 'Game over!');
+                  localPlayers.forEach((player, index) => {
+                    host.emit('msg', (player.name + ' got ' + player.score + 'points.'));
+                  })
+                  return;
+                }
                 server.emit('startRound', currentRound);
               });
 
@@ -341,7 +359,7 @@ players[index].sock.once('category', function(categoryFromPlayer) {
 });
 setTimeout(function checkTimeout() {
   if (chosen == 0) {
-    //host.emit('msg', 'Category is point');
+    host.emit('msg', 'No category was chosen therefore it is randomly chosen as: "You gotta point"');
     category = 'point';
   }
   server.emit('categoryPicked', category);
