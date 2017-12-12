@@ -318,7 +318,7 @@ function getQuestion(category){
 function sendQuestion(localPlayers, faker, category, question){
   localPlayers.forEach((player, index) => {
     if (index == faker) {
-      player.sock.emit('gamemsg', 'Youre the faker, try to blend in. The category is ' + category);
+      player.sock.emit('gamemsg', 'You are the faker, try to blend in.');
       player.sock.emit('gamemsg', 'Wait! Do the task when the timer runs out...');
     }
     else {
