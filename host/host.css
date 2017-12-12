@@ -1,5 +1,8 @@
 body {
-
+  font-family: "Courier new";
+  font-style: bold;
+  font-size: 20px;
+  background-color: pink;
 }
 
 .wrapper {
@@ -14,8 +17,34 @@ body {
 }
 
 #timediv {
-  font-size: 32px;
+  font-size: 128px;
   position: fixed;
   left: 50vw;
   top: 50vh;
+}
+
+button {
+    background-color: #E9967A;
+    border: 4px;
+    border-color: #8B0000;
+    padding: 10px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 2px;
+    font-family: "Courier new";
+    font-size: 20px;
+}
+
+button:hover {
+  background-color: #8B0000;
+  border: 4px;
+  border-color: #E9967A;
+  padding: 10px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 2px;
+  font-family: "Courier new";
+  font-size: 20px;
 }
