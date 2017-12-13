@@ -42,6 +42,7 @@ function displayStartButton() {
   btn = document.getElementById('startButton');
   document.getElementById('startButton').style.visibility = "visible";
   btn.addEventListener('click', function(e) {
+    document.getElementById('display').innerHTML = "";
     socket.emit('startgame');
     onMessage('Game has been started!');
     document.getElementById('startButton').style.visibility = "hidden";
