@@ -1,5 +1,5 @@
-//var audio = new Audio('bonetrousle.mp3');
-//audio.play();
+var audio = new Audio('lobbymusic.mp3');
+audio.play();
 
 var socket = io();
 
@@ -45,7 +45,7 @@ function displayStartButton() {
     socket.emit('startgame');
     onMessage('Game has been started!');
     document.getElementById('startButton').style.visibility = "hidden";
-
+    audio.pause();
   });
 }
 

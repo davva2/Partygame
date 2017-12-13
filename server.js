@@ -73,8 +73,8 @@ function onConnect(socket) {
 
   function hostLoop() {
     var host = socket;
-    //var roomcode = generateRoomCode();
-    var roomcode = "A";
+    var roomcode = generateRoomCode();
+    //var roomcode = "A";
     rooms.push(roomcode);
     var localip = ip.address();
     socket.emit('room', localip, roomcode);
@@ -203,9 +203,11 @@ function onConnect(socket) {
                       //server.emit('gameloop2');
                     }
                     else {
-                      host.emit('msg', 'The faker is still at large!');
                       localPlayers[faker].score = localPlayers[faker].score + 200;
-
+                      if (((rounds == 2) || (rounds == 5))) {
+                        host.emit('msg', 'The faker avoided capture! It was ' + localPlayers[faker].name + '!');
+                      }
+                      else host.emit('msg', 'The faker is still at large!');
                     }
                     startTimer(7, '', roomcode, faker, 'roundEnd');
                     server.once('roundEnd', function(variables) {
@@ -306,7 +308,6 @@ function getQuestion(category){
 
   if(category == 'point'){
     var q = pointQ[Math.floor(Math.random() * pointQ.length)];
-    console.log(q);
     return q;
   }
   if(category == 'hand'){
